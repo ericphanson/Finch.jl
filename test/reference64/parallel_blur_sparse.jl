@@ -308,6 +308,7 @@ begin
                             end
                         end
                     end
+                    resize!(tmp_lvl_val, input_lvl_2.shape)
                     for x_46 = 1:input_lvl_2.shape
                         output_lvl_2_q = (output_lvl_q - 1) * input_lvl_2.shape + x_46
                         tmp_lvl_q_2 = (1 - 1) * input_lvl_2.shape + x_46
@@ -318,8 +319,6 @@ begin
             end
             tmp_lvl_val = val_3
         end
-    qos = 1 * input_lvl.shape
-    qos_2 = qos * input_lvl_2.shape
-    resize!(val_2, qos_2)
+    resize!(val_2, input_lvl_2.shape * input_lvl.shape)
     (output = Tensor((DenseLevel){Int64}((DenseLevel){Int64}(output_lvl_3, input_lvl_2.shape), input_lvl.shape)),)
 end
