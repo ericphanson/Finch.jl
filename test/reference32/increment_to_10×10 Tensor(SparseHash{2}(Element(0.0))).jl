@@ -13,6 +13,8 @@ begin
     arr_2_lvl.shape[2] == fmt_lvl.shape[2] || throw(DimensionMismatch("mismatched dimension limits ($(arr_2_lvl.shape[2]) != $(fmt_lvl.shape[2]))"))
     fmt_lvl_qos_stop = fmt_lvl_ptr[1 + 1] - 1
     fmt_lvl_qos_fill = fmt_lvl_qos_stop
+    fmt_lvl_qos_stop = fmt_lvl_ptr[1 + 1] - 1
+    fmt_lvl_qos_fill = fmt_lvl_qos_stop
     for fmt_lvl_p = 1 + 1:-1:2
         fmt_lvl_ptr[fmt_lvl_p] = fmt_lvl_ptr[fmt_lvl_p] - fmt_lvl_ptr[fmt_lvl_p - 1]
     end
@@ -159,5 +161,5 @@ begin
     end
     fmt_lvl_qos_stop = fmt_lvl_ptr[1 + 1] - 1
     resize!(fmt_lvl_val, fmt_lvl_qos_stop)
-    nothing
+    (fmt = Tensor((SparseHashLevel){2, Tuple{Int32, Int32}}(fmt_lvl_2, (fmt_lvl.shape[1], fmt_lvl.shape[2]), fmt_lvl_ptr, fmt_lvl_tbl, fmt_lvl_srt)),)
 end
