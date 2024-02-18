@@ -144,7 +144,7 @@ function lower(root::FinchNode, ctx::AbstractCompiler, ::DefaultStyle)
         return lower_access(ctx, root, resolve(root.tns, ctx))
     elseif root.kind === call
         root = simplify(root, ctx)
-        if root.kind === call 
+        if root.kind === call
             if root.op == literal(and)
                 if isempty(root.args)
                     return true
@@ -160,8 +160,8 @@ function lower(root::FinchNode, ctx::AbstractCompiler, ::DefaultStyle)
             else
                 :($(ctx(root.op))($(map(ctx, root.args)...)))
             end
-         else 
-           return ctx(root) 
+         else
+           return ctx(root)
          end
     elseif root.kind === cached
         return ctx(root.arg)
@@ -172,7 +172,7 @@ function lower(root::FinchNode, ctx::AbstractCompiler, ::DefaultStyle)
     elseif root.kind === sieve
         cond = freshen(ctx.code,:cond)
         push!(ctx.code.preamble, :($cond = $(ctx(root.cond))))
-    
+
         return quote
             if $cond
                 $(contain(ctx) do ctx_2
@@ -196,9 +196,7 @@ function lower(root::FinchNode, ctx::AbstractCompiler, ::DefaultStyle)
     elseif root.kind === yieldbind
         contain(ctx) do ctx_2
             :($(ctx.result) = something($(ctx.result), (; $(map(root.args) do tns
-                @assert tns.kind === variable
-                name = tns.name
-                tns = trim!(resolve(tns, ctx), ctx_2)
+                name = getroot(tns).name
                 Expr(:kw, name, ctx_2(tns))
             end...), )))
         end
@@ -229,17 +227,17 @@ function lower_loop(ctx, root, ext)
     return ctx(root_2, result_style(LookupStyle(), Stylize(root_2, ctx)(root_2)))
 end
 
-lower_loop(ctx, root, ext::ParallelDimension) = 
+lower_loop(ctx, root, ext::ParallelDimension) =
     lower_parallel_loop(ctx, root, ext, ext.device)
 function lower_parallel_loop(ctx, root, ext::ParallelDimension, device::VirtualCPU)
     root = ensure_concurrent(root, ctx)
-    
+
     tid = index(freshen(ctx.code, :tid))
     i = freshen(ctx.code, :i)
 
     decl_in_scope = unique(filter(!isnothing, map(node-> begin
         if @capture(node, declare(~tns, ~init))
-            tns 
+            tns
         end
     end, PostOrderDFS(root.body))))
 
